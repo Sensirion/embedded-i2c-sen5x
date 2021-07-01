@@ -45,7 +45,6 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-
 TEST_GROUP (SEN55_Tests) {
     void setup() {
         sensirion_i2c_hal_init();
