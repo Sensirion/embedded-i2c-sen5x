@@ -49,7 +49,7 @@ TEST_GROUP (SEN55_Tests) {
     void setup() {
         sensirion_i2c_hal_init();
 
-        int16_t error = sensirion_i2c_mux_set_single_channel(0x71, 1);
+        int16_t error = sensirion_i2c_mux_set_single_channel(0x72, 4);
         CHECK_EQUAL_ZERO_TEXT(error, "sensirion_i2c_mux_set_single_channel")
     }
 
