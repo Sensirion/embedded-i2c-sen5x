@@ -43,13 +43,17 @@
 #include "sensirion_i2c_hal.h"
 #include "sensirion_test_setup.h"
 #include <inttypes.h>
+#include <math.h>
 #include <stdio.h>
 
+#define MEASUREMENT_INTERVAL_USEC 1000000
+
 TEST_GROUP (SEN55_Tests) {
+
     void setup() {
         sensirion_i2c_hal_init();
 
-        int16_t error = sensirion_i2c_mux_set_single_channel(0x71, 1);
+        int16_t error = sensirion_i2c_mux_set_single_channel(0x72, 4);
         CHECK_EQUAL_ZERO_TEXT(error, "sensirion_i2c_mux_set_single_channel")
     }
 
@@ -71,6 +75,9 @@ TEST (SEN55_Tests, SEN55_Test_start_measurement) {
 
 TEST (SEN55_Tests, SEN55_Test_stop_measurement) {
     int16_t error;
+    error = sen55_start_measurement();
+    CHECK_EQUAL_ZERO_TEXT(
+        error, "sen55_start_measurement in SEN55_Test_stop_measurement");
     error = sen55_stop_measurement();
     CHECK_EQUAL_ZERO_TEXT(error, "sen55_stop_measurement");
 }
@@ -80,7 +87,18 @@ TEST (SEN55_Tests, SEN55_Test_read_data_ready) {
     bool data_ready;
     error = sen55_read_data_ready(&data_ready);
     CHECK_EQUAL_ZERO_TEXT(error, "sen55_read_data_ready");
-    printf("Data ready: %i\n", data_ready);
+    printf("Data ready after startup: %i\n", data_ready);
+    CHECK_FALSE_TEXT(data_ready,
+                     "data ready expected to be false after startup");
+    error = sen55_start_measurement();
+    CHECK_EQUAL_ZERO_TEXT(
+        error, "sen55_start_measurement in SEN55_Test_read_data_ready");
+    sensirion_i2c_hal_sleep_usec(MEASUREMENT_INTERVAL_USEC);
+    error = sen55_read_data_ready(&data_ready);
+    CHECK_EQUAL_ZERO_TEXT(error, "sen55_read_data_ready");
+    printf("Data ready after start_measurement: %i\n", data_ready);
+    CHECK_TRUE_TEXT(data_ready,
+                    "data ready expected to be true after start measurement");
 }
 
 TEST (SEN55_Tests, SEN55_Test_read_measured_pm_values_float) {
@@ -95,6 +113,13 @@ TEST (SEN55_Tests, SEN55_Test_read_measured_pm_values_float) {
     float number_concentration_pm4p0;
     float number_concentration_pm10p0;
     float typical_particle_size;
+
+    error = sen55_start_measurement();
+    CHECK_EQUAL_ZERO_TEXT(
+        error,
+        "sen55_start_measurement in SEN55_Test_read_measured_pm_values_float");
+    sensirion_i2c_hal_sleep_usec(MEASUREMENT_INTERVAL_USEC);
+
     error = sen55_read_measured_pm_values_float(
         &mass_concentration_pm1p0, &mass_concentration_pm2p5,
         &mass_concentration_pm4p0, &mass_concentration_pm10p0,
@@ -112,11 +137,16 @@ TEST (SEN55_Tests, SEN55_Test_read_measured_pm_values_float) {
     printf("Number concentration pm4p0: %f\n", number_concentration_pm4p0);
     printf("Number concentration pm10p0: %f\n", number_concentration_pm10p0);
     printf("Typical particle size: %f\n", typical_particle_size);
+
+    CHECK_TRUE_TEXT(mass_concentration_pm1p0 >= 0,
+                    "mass concentration pm1p0 seems to be invalid")
+    CHECK_FALSE_TEXT(isnan(mass_concentration_pm1p0),
+                     "mass concentration pm1p0 is nan")
 }
 
 TEST (SEN55_Tests, SEN55_Test_read_measured_values) {
     int16_t error;
-    uint16_t mass_concentration_pm1p0;
+    uint16_t mass_concentration_pm1p0 = UINT16_MAX;
     uint16_t mass_concentration_pm2p5;
     uint16_t mass_concentration_pm4p0;
     uint16_t mass_concentration_pm10p0;
@@ -124,6 +154,12 @@ TEST (SEN55_Tests, SEN55_Test_read_measured_values) {
     int16_t ambient_temperature;
     int16_t voc_index;
     int16_t nox_index;
+
+    error = sen55_start_measurement();
+    CHECK_EQUAL_ZERO_TEXT(
+        error, "sen55_start_measurement in SEN55_Test_read_measured_values");
+    sensirion_i2c_hal_sleep_usec(MEASUREMENT_INTERVAL_USEC);
+
     error = sen55_read_measured_values(
         &mass_concentration_pm1p0, &mass_concentration_pm2p5,
         &mass_concentration_pm4p0, &mass_concentration_pm10p0,
@@ -137,14 +173,23 @@ TEST (SEN55_Tests, SEN55_Test_read_measured_values) {
     printf("Ambient temperature: %i\n", ambient_temperature);
     printf("Voc index: %i\n", voc_index);
     printf("Nox index: %i\n", nox_index);
+    CHECK_TRUE_TEXT(mass_concentration_pm1p0 != UINT16_MAX,
+                    "mass concentration pm1p0 seems to be invalid")
 }
 
 TEST (SEN55_Tests, SEN55_Test_read_measured_raw_values) {
     int16_t error;
-    int16_t raw_humidity;
-    int16_t raw_temperature;
+    int16_t raw_humidity = INT16_MAX;
+    int16_t raw_temperature = INT16_MAX;
     uint16_t raw_voc;
     uint16_t raw_nox;
+
+    error = sen55_start_measurement();
+    CHECK_EQUAL_ZERO_TEXT(
+        error,
+        "sen55_start_measurement in SEN55_Test_read_measured_raw_values");
+    sensirion_i2c_hal_sleep_usec(MEASUREMENT_INTERVAL_USEC);
+
     error = sen55_read_measured_raw_values(&raw_humidity, &raw_temperature,
                                            &raw_voc, &raw_nox);
     CHECK_EQUAL_ZERO_TEXT(error, "sen55_read_measured_raw_values");
@@ -152,6 +197,9 @@ TEST (SEN55_Tests, SEN55_Test_read_measured_raw_values) {
     printf("Raw temperature: %i\n", raw_temperature);
     printf("Raw voc: %u\n", raw_voc);
     printf("Raw nox: %u\n", raw_nox);
+    CHECK_TRUE_TEXT(raw_humidity != INT16_MAX, "read of humidity did not work")
+    CHECK_TRUE_TEXT(raw_temperature != INT16_MAX,
+                    "raw temperature seems to be invalid")
 }
 
 TEST (SEN55_Tests, SEN55_Test_start_fan_cleaning) {
