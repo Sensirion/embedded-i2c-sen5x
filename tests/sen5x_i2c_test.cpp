@@ -80,6 +80,8 @@ TEST (SEN5X_Tests, SEN5X_Test_start_measurement_without_pm) {
 
 TEST (SEN5X_Tests, SEN5X_Test_stop_measurement) {
     int16_t error;
+    error = sen5x_start_measurement();
+    CHECK_EQUAL_ZERO_TEXT(error, "sen5x_start_measurement");
     error = sen5x_stop_measurement();
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_stop_measurement");
 }
@@ -207,139 +209,152 @@ TEST (SEN5X_Tests, SEN5X_Test_start_fan_cleaning) {
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_start_fan_cleaning");
 }
 
-TEST (SEN5X_Tests, SEN5X_Test_set_temperature_offset_parameters) {
+TEST (SEN5X_Tests, SEN5X_Test_temperature_offset_parameters) {
     int16_t error;
-    int16_t temp_offset = 0;
-    int16_t slope = 0;
-    uint16_t time_constant = 0;
+    int16_t temp_offset = 5 * 200;
+    int16_t slope = int16_t(0.01 * 10000);
+    uint16_t time_constant = 3;
     error = sen5x_set_temperature_offset_parameters(temp_offset, slope,
                                                     time_constant);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_set_temperature_offset_parameters");
-}
-
-TEST (SEN5X_Tests, SEN5X_Test_get_temperature_offset_parameters) {
-    int16_t error;
-    int16_t temp_offset;
-    int16_t slope;
-    uint16_t time_constant;
-    error = sen5x_get_temperature_offset_parameters(&temp_offset, &slope,
-                                                    &time_constant);
+    int16_t temp_offset_read;
+    int16_t slope_read;
+    uint16_t time_constant_read;
+    error = sen5x_get_temperature_offset_parameters(
+        &temp_offset_read, &slope_read, &time_constant_read);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_get_temperature_offset_parameters");
-    printf("Temp_offset: %i\n", temp_offset);
-    printf("Slope: %i\n", slope);
-    printf("Time constant: %u\n", time_constant);
+    CHECK_EQUAL_TEXT(temp_offset, temp_offset_read,
+                     "offset read different from value set")
+    CHECK_EQUAL_TEXT(slope, slope_read, "slope read different from value set")
+    CHECK_EQUAL_TEXT(time_constant, time_constant_read,
+                     "time_constant read different from value set")
 }
 
 TEST (SEN5X_Tests, SEN5X_Test_set_warm_start_parameter) {
     int16_t error;
-    uint16_t warm_start = 0;
+    uint16_t warm_start = 3333;
     error = sen5x_set_warm_start_parameter(warm_start);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_set_warm_start_parameter");
-}
-
-TEST (SEN5X_Tests, SEN5X_Test_get_warm_start_parameter) {
-    int16_t error;
-    uint16_t warm_start;
-    error = sen5x_get_warm_start_parameter(&warm_start);
+    uint16_t warm_start_read;
+    error = sen5x_get_warm_start_parameter(&warm_start_read);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_get_warm_start_parameter");
-    printf("Warm start: %u\n", warm_start);
+    CHECK_EQUAL_TEXT(warm_start, warm_start_read,
+                     "warm start value read different from value set");
 }
 
-TEST (SEN5X_Tests, SEN5X_Test_set_voc_algorithm_tuning_parameters) {
+TEST (SEN5X_Tests, SEN5X_Test_voc_algorithm_tuning_parameters) {
     int16_t error;
-    int16_t index_offset = 0;
-    int16_t learning_time_offset_hours = 0;
-    int16_t learning_time_gain_hours = 0;
-    int16_t gating_max_duration_minutes = 0;
-    int16_t std_initial = 0;
-    int16_t gain_factor = 0;
+    int16_t index_offset = 2;
+    int16_t learning_time_offset_hours = 11;
+    int16_t learning_time_gain_hours = 10;
+    int16_t gating_max_duration_minutes = 710;
+    int16_t std_initial = 40;
+    int16_t gain_factor = 220;
     error = sen5x_set_voc_algorithm_tuning_parameters(
         index_offset, learning_time_offset_hours, learning_time_gain_hours,
         gating_max_duration_minutes, std_initial, gain_factor);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_set_voc_algorithm_tuning_parameters");
-}
 
-TEST (SEN5X_Tests, SEN5X_Test_get_voc_algorithm_tuning_parameters) {
-    int16_t error;
-    int16_t index_offset;
-    int16_t learning_time_offset_hours;
-    int16_t learning_time_gain_hours;
-    int16_t gating_max_duration_minutes;
-    int16_t std_initial;
-    int16_t gain_factor;
+    int16_t index_offset_read;
+    int16_t learning_time_offset_hours_read;
+    int16_t learning_time_gain_hours_read;
+    int16_t gating_max_duration_minutes_read;
+    int16_t std_initial_read;
+    int16_t gain_factor_read;
     error = sen5x_get_voc_algorithm_tuning_parameters(
-        &index_offset, &learning_time_offset_hours, &learning_time_gain_hours,
-        &gating_max_duration_minutes, &std_initial, &gain_factor);
+        &index_offset_read, &learning_time_offset_hours_read,
+        &learning_time_gain_hours_read, &gating_max_duration_minutes_read,
+        &std_initial_read, &gain_factor_read);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_get_voc_algorithm_tuning_parameters");
-    printf("Index offset: %i\n", index_offset);
-    printf("Learning time offset hours: %i\n", learning_time_offset_hours);
-    printf("Learning time gain hours: %i\n", learning_time_gain_hours);
-    printf("Gating max duration minutes: %i\n", gating_max_duration_minutes);
-    printf("Std initial: %i\n", std_initial);
-    printf("Gain factor: %i\n", gain_factor);
+    printf("Index offset: %i\n", index_offset_read);
+    printf("Learning time offset hours: %i\n", learning_time_offset_hours_read);
+    printf("Learning time gain hours: %i\n", learning_time_gain_hours_read);
+    printf("Gating max duration minutes: %i\n",
+           gating_max_duration_minutes_read);
+    printf("Std initial: %i\n", std_initial_read);
+    printf("Gain factor: %i\n", gain_factor_read);
+    CHECK_EQUAL_TEXT(index_offset, index_offset_read,
+                     "index_offset not matching")
+    CHECK_EQUAL_TEXT(learning_time_offset_hours,
+                     learning_time_offset_hours_read,
+                     "learing_time_offset_hours not matching")
+    CHECK_EQUAL_TEXT(learning_time_gain_hours, learning_time_gain_hours_read,
+                     "learning_time_gain_hours not matching")
+    CHECK_EQUAL_TEXT(gating_max_duration_minutes,
+                     gating_max_duration_minutes_read,
+                     "gating_max_duration_minutes not matching")
+    CHECK_EQUAL_TEXT(std_initial, std_initial_read, "std_initial not matching")
+    CHECK_EQUAL_TEXT(gain_factor, gain_factor_read, "gain_factor not matching")
 }
 
-TEST (SEN5X_Tests, SEN5X_Test_set_nox_algorithm_tuning_parameters) {
+TEST (SEN5X_Tests, SEN5X_Test_nox_algorithm_tuning_parameters) {
     int16_t error;
-    int16_t index_offset = 0;
-    int16_t learning_time_offset_hours = 0;
-    int16_t learning_time_gain_hours = 0;
-    int16_t gating_max_duration_minutes = 0;
-    int16_t std_initial = 0;
-    int16_t gain_factor = 0;
+    int16_t index_offset = 110;
+    int16_t learning_time_offset_hours = 13;
+    int16_t learning_time_gain_hours = 14;
+    int16_t gating_max_duration_minutes = 190;
+    int16_t std_initial = 60;
+    int16_t gain_factor = 240;
     error = sen5x_set_nox_algorithm_tuning_parameters(
         index_offset, learning_time_offset_hours, learning_time_gain_hours,
         gating_max_duration_minutes, std_initial, gain_factor);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_set_nox_algorithm_tuning_parameters");
-}
-
-TEST (SEN5X_Tests, SEN5X_Test_get_nox_algorithm_tuning_parameters) {
-    int16_t error;
-    int16_t index_offset;
-    int16_t learning_time_offset_hours;
-    int16_t learning_time_gain_hours;
-    int16_t gating_max_duration_minutes;
-    int16_t std_initial;
-    int16_t gain_factor;
+    int16_t index_offset_read;
+    int16_t learning_time_offset_hours_read;
+    int16_t learning_time_gain_hours_read;
+    int16_t gating_max_duration_minutes_read;
+    int16_t std_initial_read;
+    int16_t gain_factor_read;
     error = sen5x_get_nox_algorithm_tuning_parameters(
-        &index_offset, &learning_time_offset_hours, &learning_time_gain_hours,
-        &gating_max_duration_minutes, &std_initial, &gain_factor);
+        &index_offset_read, &learning_time_offset_hours_read,
+        &learning_time_gain_hours_read, &gating_max_duration_minutes_read,
+        &std_initial_read, &gain_factor_read);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_get_nox_algorithm_tuning_parameters");
-    printf("Index offset: %i\n", index_offset);
-    printf("Learning time offset hours: %i\n", learning_time_offset_hours);
-    printf("Learning time gain hours: %i\n", learning_time_gain_hours);
-    printf("Gating max duration minutes: %i\n", gating_max_duration_minutes);
-    printf("Std initial: %i\n", std_initial);
-    printf("Gain factor: %i\n", gain_factor);
+    printf("Index offset: %i\n", index_offset_read);
+    printf("Learning time offset hours: %i\n", learning_time_offset_hours_read);
+    printf("Learning time gain hours: %i\n", learning_time_gain_hours_read);
+    printf("Gating max duration minutes: %i\n",
+           gating_max_duration_minutes_read);
+    printf("Std initial: %i\n", std_initial_read);
+    printf("Gain factor: %i\n", gain_factor_read);
+    CHECK_EQUAL_TEXT(index_offset, index_offset_read,
+                     "index_offset not matching")
+    CHECK_EQUAL_TEXT(learning_time_offset_hours,
+                     learning_time_offset_hours_read,
+                     "learing_time_offset_hours not matching")
+    CHECK_EQUAL_TEXT(learning_time_gain_hours, learning_time_gain_hours_read,
+                     "learning_time_gain_hours not matching")
+    CHECK_EQUAL_TEXT(gating_max_duration_minutes,
+                     gating_max_duration_minutes_read,
+                     "gating_max_duration_minutes not matching")
+    CHECK_EQUAL_TEXT(std_initial, std_initial_read, "std_initial not matching")
+    CHECK_EQUAL_TEXT(gain_factor, gain_factor_read, "gain_factor not matching")
 }
 
-TEST (SEN5X_Tests, SEN5X_Test_set_rht_acceleration_mode) {
+TEST (SEN5X_Tests, SEN5X_Test_rht_acceleration_mode) {
     int16_t error;
-    uint16_t mode = 0;
+    uint16_t mode = 1;
     error = sen5x_set_rht_acceleration_mode(mode);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_set_rht_acceleration_mode");
-}
-
-TEST (SEN5X_Tests, SEN5X_Test_get_rht_acceleration_mode) {
-    int16_t error;
-    uint16_t mode;
-    error = sen5x_get_rht_acceleration_mode(&mode);
+    uint16_t mode_read;
+    error = sen5x_get_rht_acceleration_mode(&mode_read);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_get_rht_acceleration_mode");
-    printf("Mode: %u\n", mode);
+    printf("Mode: %u\n", mode_read);
+    CHECK_EQUAL_TEXT(mode, mode_read, "mode set and read not matching")
 }
 
 TEST (SEN5X_Tests, SEN5X_Test_set_voc_algorithm_state) {
     int16_t error;
-    uint8_t state[42];
-    uint8_t state_size = 42;
+    uint8_t state[8];
+    uint8_t state_size = 8;
     error = sen5x_set_voc_algorithm_state(&state[0], state_size);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_set_voc_algorithm_state");
 }
 
 TEST (SEN5X_Tests, SEN5X_Test_get_voc_algorithm_state) {
     int16_t error;
-    uint8_t state[42];
-    uint8_t state_size = 42;
+    uint8_t state[8];
+    uint8_t state_size = 8;
     error = sen5x_get_voc_algorithm_state(&state[0], state_size);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_get_voc_algorithm_state");
     printf("State: ");
@@ -349,19 +364,17 @@ TEST (SEN5X_Tests, SEN5X_Test_get_voc_algorithm_state) {
     printf("\n");
 }
 
-TEST (SEN5X_Tests, SEN5X_Test_set_fan_auto_cleaning_interval) {
+TEST (SEN5X_Tests, SEN5X_Test_fan_auto_cleaning_interval) {
     int16_t error;
-    uint32_t interval = 0;
+    uint32_t interval = 5;
     error = sen5x_set_fan_auto_cleaning_interval(interval);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_set_fan_auto_cleaning_interval");
-}
-
-TEST (SEN5X_Tests, SEN5X_Test_get_fan_auto_cleaning_interval) {
-    int16_t error;
-    uint32_t interval;
-    error = sen5x_get_fan_auto_cleaning_interval(&interval);
+    uint32_t interval_read;
+    error = sen5x_get_fan_auto_cleaning_interval(&interval_read);
     CHECK_EQUAL_ZERO_TEXT(error, "sen5x_get_fan_auto_cleaning_interval");
-    printf("Interval: %u\n", interval);
+    printf("Interval: %u\n", interval_read);
+    CHECK_EQUAL_TEXT(interval, interval_read,
+                     "interval set and read not matching")
 }
 
 TEST (SEN5X_Tests, SEN5X_Test_get_product_name) {

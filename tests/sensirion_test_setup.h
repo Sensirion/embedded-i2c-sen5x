@@ -15,6 +15,12 @@
     CHECK_EQUAL_TEXT(0, (actual), (text))
 #endif
 
+// provide macro to check not zero
+#ifndef CHECK_NOT_EQUAL_ZERO_TEXT
+#define CHECK_NOT_EQUAL_ZERO_TEXT(actual, text) \
+    CHECK_TRUE_TEXT(0 != actual, (text))
+#endif
+
 int main(int argc, char** argv);
 
 #endif /* SENSIRION_TEST_SETUP_H */
