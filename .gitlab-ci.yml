@@ -11,7 +11,6 @@ syntax_check:
   script:
     - find . -type f -iregex ".*\.\(c\|h\|cpp\|ino\)" -exec clang-format-6.0 -i -style=file {} \; && git diff --exit-code
 
-
 cppcheck:
   stage: validate
   image:
@@ -23,7 +22,7 @@ cppcheck:
 build:
   stage: build
   image:
-    name: sensirion/embedded-ci:2.3.0
+    name: sensirion/embedded-ci:2.4.0
   tags: [linux, docker]
   script:
     - make
@@ -33,9 +32,8 @@ test:
   image: registry.gitlab.sensirion.lokal/sensirion/docker/docker-rpi-testbed:1.2.0
   tags: [mso-sw-testbed-2]
   script:
-    - git clone -b 3.0.0 https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab/MSO-SW/drivers/testbed/i2c-mux-testbed.git
+    - git clone -b 3.0.0 https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.sensirion.lokal/MSO-SW/drivers/testbed/i2c-mux-testbed.git
     - cd tests/
-    - make
     - make test
 
 TODO_check:

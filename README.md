@@ -1,17 +1,16 @@
-# Sensirion Embedded I2C SEN55 Driver
+# Sensirion Embedded I2C SEN5x Driver
 
-This is a generic embedded driver for the Sensirion SEN55 sensor module. It enables developers to communicate with the
-SEN55 sensor module on different hardware platforms by only adapting the I2C communication related source files.
+This is a generic embedded driver for the Sensirion SEN5x sensor modules. It enables developers to communicate with the
+SEN54/SEN55 sensor module on different hardware platforms by only adapting the I2C communication related source files.
 
 <center><img src="images/SEN5x.png" width="500px"></center>
-
 # Getting started
 
 ## Connecting the Sensor
 
 Your sensor has the five different connectors: VCC, GND, SDA, SCL, SEL (the sixth connector will not be used for now).
 
-<center><img src="images/SEN55_pinout.png" width="300px"></center>
+<center><img src="images/SEN5X_pinout.png" width="300px"></center>
 
 | *Pin* | *Name* | *Description*                   | *Comments*                            |
 |-------|--------|---------------------------------|---------------------------------------|
@@ -47,6 +46,7 @@ to these names when compiling the driver. The features we use from those librari
 sizes from `<stdint.h>` and `NULL` from `<stdlib.h>`. If they are not available you need to specify the following
 integer types yourself:
 
+
 * `int64_t` = signed 64bit integer
 * `uint64_t` = unsigned 64bit integer
 * `int32_t` = signed 32bit integer
@@ -62,14 +62,14 @@ your system specific values.
 Now we are ready to compile and run the example usage for your sensor.
 
 ## Compile and Run
-
 Pass the source `.c` and header `.h` files in this folder into your C compiler and run the resulting binary. This step
 may vary, depending on your platform. Here we demonstrate the procedure for Linux based platforms:
+
 
 1. Open up a terminal.
 2. Navigate to the directory where this README is located.
 3. Run `make` (this compiles the example code into one executable binary).
-4. Run the compiled executable with `./sen55_i2c_example_usage`
+4. Run the compiled executable with `./sen5x_i2c_example_usage`
 5. Now you should see the first measurement values appear in your terminal. As a next step you can adjust the example
    usage file or write your own main function to use the sensor.
 
@@ -83,6 +83,7 @@ In these files you can find the implementation of the I2C protocol used by Sensi
 files are used by the embedded driver to build the correct frame out of data to be sent to the sensor or receive a frame
 of data from the sensor and convert it back to data readable by your machine. The functions in here calculate and check
 CRCs, reorder bytes for different byte orders and build the correct formatted frame for your sensor.
+
 
 ### sensirion\_i2c\_hal.[ch]
 
