@@ -4,6 +4,12 @@ This is a generic embedded driver for the Sensirion SEN5x sensor modules. It ena
 SEN54/SEN55 sensor module on different hardware platforms by only adapting the I2C communication related source files.
 
 <center><img src="images/SEN5x.png" width="500px"></center>
+
+## Supported sensors
+
+- SEN54 (no NOx signal available)
+- SEN55 (full feature set)
+
 # Getting started
 
 ## Connecting the Sensor
@@ -14,7 +20,7 @@ Your sensor has the five different connectors: VCC, GND, SDA, SCL, SEL (the sixt
 
 | *Pin* | *Name* | *Description*                   | *Comments*                            |
 |-------|--------|---------------------------------|---------------------------------------|
-| 1     | VDD    | Supply Voltage                  | 5V ±10%
+| 1     | VCC    | Supply Voltage                  | 5V ±10%
 | 2     | GND    | Ground                          |
 | 3     | SDA    | I2C: Serial data input / output | TTL 5V and LVTTL 3.3V compatible
 | 4     | SCL    | I2C: Serial clock input         | TTL 5V and LVTTL 3.3V compatible
