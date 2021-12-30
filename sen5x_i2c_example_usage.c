@@ -91,29 +91,18 @@ int main(void) {
         printf("Firmware: %u.%u, Hardware: %u.%u\n", firmware_major,
                firmware_minor, hardware_major, hardware_minor);
     }
-    error = sen5x_set_temperature_offset_parameters(0, 10000, 10);
+
+    // set RHT acceleration mode
+    //  0: Default / Air Purifier / IAQ (slow)
+    //  1: IAQ (fast)
+    //  2: IAQ (medium)
+    error = sen5x_set_rht_acceleration_mode(0);
     if (error) {
-        printf(
-            "Error executing sen5x_set_temperature_offset_parameters(): %i\n",
-            error);
+        printf("Error executing sen5x_set_rht_acceleration_mode(): %i\n",
+               error);
     }
 
-    int16_t temp_offset = 0;
-    int16_t slope = 0;
-    uint16_t time_const = 0;
-    error = sen5x_get_temperature_offset_parameters(&temp_offset, &slope,
-                                                    &time_const);
-    if (error) {
-        printf(
-            "Error executing sen5x_get_temperature_offset_parameters(): %i\n",
-            error);
-    } else {
-        printf("Temperature offset: %i \n", temp_offset);
-        printf("Slope: %i\n", slope);
-        printf("Time constant: %i\n", time_const);
-    }
     // Start Measurement
-
     error = sen5x_start_measurement();
     if (error) {
         printf("Error executing sen5x_start_measurement(): %i\n", error);
@@ -152,7 +141,11 @@ int main(void) {
             printf("Ambient temperature: %.1f °C\n",
                    ambient_temperature / 200.0f);
             printf("Voc index: %.1f\n", voc_index / 10.0f);
-            printf("Nox index: %.1f\n", nox_index / 10.0f);
+            if (nox_index == 0x7fff) {
+                printf("Nox index: n/a\n");
+            } else {
+                printf("Nox index: %.1f\n", nox_index / 10.0f);
+            }
         }
     }
 
