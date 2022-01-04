@@ -92,14 +92,35 @@ int main(void) {
                firmware_minor, hardware_major, hardware_minor);
     }
 
-    // set RHT acceleration mode
-    //  0: Default / Air Purifier / IAQ (slow)
-    //  1: IAQ (fast)
-    //  2: IAQ (medium)
-    error = sen5x_set_rht_acceleration_mode(0);
+    // set a temperature offset
+    // By default, the temperature and humidity outputs from the sensor
+    // are compensated for the modules self-heating. If the module is
+    // designed into a device, the temperature compensation might need
+    // to be adapted to incorporate the change in thermal coupling and
+    // self-heating of other device components.
+    //
+    // A guide to achieve optimal performance, including references
+    // to mechanical design-in examples can be found in the app note
+    // “SEN5x – Temperature Compensation Instruction” at www.sensirion.com.
+    // Please refer to those application notes for further information
+    // on the advanced compensation settings used in
+    // `sen5x_set_temperature_offset_parameters`,
+    // `sen5x_set_warm_start_parameter` and `sen5x_set_rht_acceleration_mode`.
+    //
+    // Adjust temp_offset in degrees celsius to account for additional
+    // temperature offsets exceeding the SEN module's self heating.
+
+    float temp_offset = 0.0f;
+    int16_t default_slope = 0;
+    uint16_t default_time_constant = 0;
+    error = sen5x_set_temperature_offset_parameters(
+        (int16_t)(200 * temp_offset), default_slope, default_time_constant);
     if (error) {
-        printf("Error executing sen5x_set_rht_acceleration_mode(): %i\n",
-               error);
+        printf(
+            "Error executing sen5x_set_temperature_offset_parameters(): %i\n",
+            error);
+    } else {
+        printf("Temperature Offset set to %.2f °C\n", temp_offset);
     }
 
     // Start Measurement
