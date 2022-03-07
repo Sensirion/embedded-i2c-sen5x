@@ -47,13 +47,13 @@ extern "C" {
 
 /**
  * sen5x_start_measurement() - Starts a continuous measurement.
-
-After starting the measurement, it takes some time (~1s) until the first
-measurement results are available. You could poll with the command
-0x0202 \"Read Data Ready\" to check when the results are ready to read.
-
-This command is only available in idle mode. If the device is already
-in any measure mode, this command has no effect.
+ *
+ * After starting the measurement, it takes some time (~1s) until the first
+ * measurement results are available. You could poll with the command
+ * 0x0202 \"Read Data Ready\" to check when the results are ready to read.
+ *
+ * This command is only available in idle mode. If the device is already
+ * in any measure mode, this command has no effect.
  *
  * @return 0 on success, an error code otherwise
  */
@@ -61,15 +61,17 @@ int16_t sen5x_start_measurement(void);
 
 /**
  * sen5x_start_measurement_without_pm() - Starts a continuous measurement
-without PM. Only humidity, temperature, VOC and NOx are available in this mode.
-Laser and fan are switched off to keep power consumption low.
-
-After starting the measurement, it takes some time (~1s) until the first
-measurement results are available. You could poll with the command
-0x0202 \"Read Data Ready\" to check when the results are ready to read.
-
-This command is only available in idle mode. If the device is already
-in any measure mode, this command has no effect.
+ * without PM. Only humidity, temperature, VOC and NOx are available in this
+ * mode. Laser and fan are switched off to keep power consumption low.
+ *
+ * After starting the measurement, it takes some time (~1s) until the first
+ * measurement results are available. You could poll with the command
+ * 0x0202 \"Read Data Ready\" to check when the results are ready to read.
+ *
+ * This command is only available in idle mode. If the device is already
+ * in any measure mode, this command has no effect.
+ *
+ * Supported sensors: SEN54, SEN55
  *
  * @return 0 on success, an error code otherwise
  */
@@ -77,8 +79,8 @@ int16_t sen5x_start_measurement_without_pm(void);
 
 /**
  * sen5x_stop_measurement() - Stops the measurement and returns to idle mode.
-
-If the device is already in idle mode, this command has no effect.
+ *
+ * If the device is already in idle mode, this command has no effect.
  *
  * @return 0 on success, an error code otherwise
  */
@@ -106,52 +108,44 @@ int16_t sen5x_read_data_ready(bool* data_ready);
 
 /**
  * sen5x_read_measured_values() - Returns the measured values.
-
-The command 0x0202 \"Read Data Ready\" can be used to check if new
-data is available since the last read operation. If no new data is
-available, the previous values will be returned again. If no data is
-available at all (e.g. measurement not running for at least one
-second), all values will be at their upper limit (0xFFFF for `uint16`,
-0x7FFF for `int16`).
  *
- * @param mass_concentration_pm1p0 Value is scaled with factor 10: PM1.0 [µg/m³]
-= value / 10
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * The command 0x0202 \"Read Data Ready\" can be used to check if new
+ * data is available since the last read operation. If no new data is
+ * available, the previous values will be returned again. If no data is
+ * available at all (e.g. measurement not running for at least one
+ * second), all values will be at their upper limit (0xFFFF for `uint16`,
+ * 0x7FFF for `int16`).
  *
- * @param mass_concentration_pm2p5 Value is scaled with factor 10: PM2.5 [µg/m³]
-= value / 10
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * @param mass_concentration_pm1p0 Value is scaled with factor 10:
+ *                                 PM1.0 [µg/m³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
  *
- * @param mass_concentration_pm4p0 Value is scaled with factor 10: PM4.0 [µg/m³]
-= value / 10
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * @param mass_concentration_pm2p5 Value is scaled with factor 10:
+ *                                 PM2.5 [µg/m³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
  *
- * @param mass_concentration_pm10p0 Value is scaled with factor 10: PM10.0
-[µg/m³] = value / 10
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * @param mass_concentration_pm4p0 Value is scaled with factor 10:
+ *                                 PM4.0 [µg/m³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
+ *
+ * @param mass_concentration_pm10p0 Value is scaled with factor 10:
+ *                                  PM10.0 [µg/m³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
  *
  * @param ambient_humidity Value is scaled with factor 100: RH [%] = value / 100
-
-*Note: If this value is unknown, 0x7FFF is returned.*
+ * @note If this value is unknown, 0x7FFF is returned.*
  *
- * @param ambient_temperature Value is scaled with factor 200: T [°C] = value /
-200
-
-*Note: If this value is unknown, 0x7FFF is returned.*
+ * @param ambient_temperature Value is scaled with factor 200:
+ *                            T [°C] = value / 200
+ * @note If this value is unknown, 0x7FFF is returned.*
  *
  * @param voc_index Value is scaled with factor 10: VOC Index = value / 10
-
-*Note: If this value is unknown, 0x7FFF is returned.*
+ * @note If this value is unknown, 0x7FFF is returned.*
  *
  * @param nox_index Value is scaled with factor 10: NOx Index = value / 10
-
-*Note: If this value is unknown, 0x7FFF is returned. During
-the first 10..11 seconds after power-on or device reset, this
-value will be 0x7FFF as well.*
+ * @note If this value is unknown, 0x7FFF is returned. During
+ * the first 10..11 seconds after power-on or device reset, this
+ * value will be 0x7FFF as well.*
  *
  * @return 0 on success, an error code otherwise
  */
@@ -174,22 +168,18 @@ second), all values will be at their upper limit (0xFFFF for `uint16`,
 0x7FFF for `int16`).
  *
  * @param raw_humidity Value is scaled with factor 100: RH [%] = value / 100
-
-*Note: If this value is unknown, 0x7FFF is returned.*
+ * @note If this value is unknown, 0x7FFF is returned.
  *
  * @param raw_temperature Value is scaled with factor 200: T [°C] = value / 200
-
-*Note: If this value is unknown, 0x7FFF is returned.*
+ * @note If this value is unknown, 0x7FFF is returned.
  *
  * @param raw_voc Raw measured VOC ticks without scale factor.
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * @note If this value is unknown, 0xFFFF is returned.
  *
  * @param raw_nox Raw measured NOx ticks without scale factor.
-
-*Note: If this value is unknown, 0xFFFF is returned. During
-the first 10..11 seconds after power-on or device reset, this
-value will be 0xFFFF as well.*
+ * @note If this value is unknown, 0xFFFF is returned. During
+ * the first 10..11 seconds after power-on or device reset, this
+ * value will be 0xFFFF as well.*
  *
  * @return 0 on success, an error code otherwise
  */
@@ -198,64 +188,86 @@ int16_t sen5x_read_measured_raw_values(int16_t* raw_humidity,
                                        uint16_t* raw_voc, uint16_t* raw_nox);
 
 /**
+ * sen5x_read_measured_values_sen50() - Returns the measured values for SEN50.
+ *
+ * The command 0x0202 \"Read Data Ready\" can be used to check if new
+ * data is available since the last read operation. If no new data is
+ * available, the previous values will be returned again. If no data is
+ * available at all (e.g. measurement not running for at least one
+ * second), all values will be at their upper limit (0xFFFF).
+ *
+ * @param mass_concentration_pm1p0 Value is scaled with factor 10:
+ *                                 PM1.0 [µg/m³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
+ *
+ * @param mass_concentration_pm2p5 Value is scaled with factor 10:
+ *                                 PM2.5 [µg/m³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
+ *
+ * @param mass_concentration_pm4p0 Value is scaled with factor 10:
+ *                                 PM4.0 [µg/m³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
+ *
+ * @param mass_concentration_pm10p0 Value is scaled with factor 10:
+ *                                  PM10.0 [µg/m³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
+ *
+ * @return 0 on success, an error code otherwise
+ */
+int16_t sen5x_read_measured_values_sen50(uint16_t* mass_concentration_pm1p0,
+                                         uint16_t* mass_concentration_pm2p5,
+                                         uint16_t* mass_concentration_pm4p0,
+                                         uint16_t* mass_concentration_pm10p0);
+
+/**
  * sen5x_read_measured_pm_values() - Returns the measured particulate matter
-values.
-
-The command 0x0202 \"Read Data Ready\" can be used to check if new
-data is available since the last read operation. If no new data is
-available, the previous values will be returned again. If no data
-is available at all (e.g. measurement not running for at least one
-second), all values will be 0xFFFF.
+ * values.
  *
- * @param mass_concentration_pm1p0 Value is scaled with factor 10: PM1.0 [µg/m³]
-= value / 10
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * The command 0x0202 \"Read Data Ready\" can be used to check if new
+ * data is available since the last read operation. If no new data is
+ * available, the previous values will be returned again. If no data
+ * is available at all (e.g. measurement not running for at least one
+ * second), all values will be 0xFFFF.
  *
- * @param mass_concentration_pm2p5 Value is scaled with factor 10: PM2.5 [µg/m³]
-= value / 10
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * @param mass_concentration_pm1p0 Value is scaled with factor 10:
+ *                                 PM1.0 [µg/m³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
  *
- * @param mass_concentration_pm4p0 Value is scaled with factor 10: PM4.0 [µg/m³]
-= value / 10
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * @param mass_concentration_pm2p5 Value is scaled with factor 10:
+ *                                 PM2.5 [µg/m³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
  *
- * @param mass_concentration_pm10p0 Value is scaled with factor 10: PM10.0
-[µg/m³] = value / 10
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * @param mass_concentration_pm4p0 Value is scaled with factor 10:
+ *                                 PM4.0 [µg/m³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
  *
- * @param number_concentration_pm0p5 Value is scaled with factor 10: PM0.5
-[#/cm³] = value / 10
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * @param mass_concentration_pm10p0 Value is scaled with factor 10:
+ *                                  PM10.0 [µg/m³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
  *
- * @param number_concentration_pm1p0 Value is scaled with factor 10: PM1.0
-[#/cm³] = value / 10
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * @param number_concentration_pm0p5 Value is scaled with factor 10:
+ *                                   PM0.5 [#/cm³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
  *
- * @param number_concentration_pm2p5 Value is scaled with factor 10: PM2.5
-[#/cm³] = value / 10
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * @param number_concentration_pm1p0 Value is scaled with factor 10:
+ *                                   PM1.0 [#/cm³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
  *
- * @param number_concentration_pm4p0 Value is scaled with factor 10: PM4.0
-[#/cm³] = value / 10
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * @param number_concentration_pm2p5 Value is scaled with factor 10:
+ *                                   PM2.5 [#/cm³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
  *
- * @param number_concentration_pm10p0 Value is scaled with factor 10: PM10.0
-[#/cm³] = value / 10
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * @param number_concentration_pm4p0 Value is scaled with factor 10:
+ *                                   PM4.0 [#/cm³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
  *
- * @param typical_particle_size Value is scaled with factor 1000: Size [µm] =
-value / 1000
-
-*Note: If this value is unknown, 0xFFFF is returned.*
+ * @param number_concentration_pm10p0 Value is scaled with factor 10:
+ *                                    PM10.0 [#/cm³] = value / 10
+ * @note If this value is unknown, 0xFFFF is returned.
+ *
+ * @param typical_particle_size Value is scaled with factor 1000:
+ *                              Size [µm] = value / 1000
+ * @note If this value is unknown, 0xFFFF is returned.
  *
  * @return 0 on success, an error code otherwise
  */
@@ -268,20 +280,20 @@ int16_t sen5x_read_measured_pm_values(
 
 /**
  * sen5x_start_fan_cleaning() - Starts the fan cleaning manually. The \"data
-ready\"-flag will be cleared immediately and during the next few seconds, no new
-measurement results will be available (old values will be returned). Once the
-cleaning is finished, the \"data ready\"-flag will be set and new
-measurement results will be available.
-
-When executing this command while cleaning is already active, the
-command does nothing.
-
-If you stop the measurement while fan cleaning is active, the cleaning
-will be aborted immediately.
+ * ready\"-flag will be cleared immediately and during the next few seconds, no
+ * new measurement results will be available (old values will be returned). Once
+ * the cleaning is finished, the \"data ready\"-flag will be set and new
+ * measurement results will be available.
+ *
+ * When executing this command while cleaning is already active, the
+ * command does nothing.
+ *
+ * If you stop the measurement while fan cleaning is active, the cleaning
+ * will be aborted immediately.
  *
  * @note This command is only available in measure mode with PM measurement
-enabled, i.e. only if the fan is already running. In any other state, this
-command does nothing.
+ * enabled, i.e. only if the fan is already running. In any other state, this
+ * command does nothing.
  *
  * @return 0 on success, an error code otherwise
  */
@@ -290,6 +302,8 @@ int16_t sen5x_start_fan_cleaning(void);
 /**
  * sen5x_set_temperature_offset_parameters() - Sets the temperature offset
  * parameters for the device.
+ *
+ * Supported sensors: SEN54, SEN55
  *
  * @param temp_offset Constant temperature offset scaled with factor 200 (T [°C]
  * = value / 200). The default value is 0.
@@ -312,6 +326,8 @@ int16_t sen5x_set_temperature_offset_parameters(int16_t temp_offset,
  * sen5x_get_temperature_offset_parameters() - Gets the temperature offset
  * parameters from the device.
  *
+ * Supported sensors: SEN54, SEN55
+ *
  * @param temp_offset Constant temperature offset scaled with factor 200 (T [°C]
  * = value / 200).
  *
@@ -332,6 +348,8 @@ int16_t sen5x_get_temperature_offset_parameters(int16_t* temp_offset,
  * sen5x_set_warm_start_parameter() - Sets the warm start parameter for the
  * device.
  *
+ * Supported sensors: SEN54, SEN55
+ *
  * @note This parameter can be changed in any state of the device (and the
  * getter immediately returns the new value), but it is applied only the next
  * time starting a measurement, i.e. when sending a \"Start Measurement\"
@@ -349,6 +367,8 @@ int16_t sen5x_set_warm_start_parameter(uint16_t warm_start);
  * sen5x_get_warm_start_parameter() - Gets the warm start parameter from the
  * device.
  *
+ * Supported sensors: SEN54, SEN55
+ *
  * @param warm_start Warm start behavior as a value in the range from 0 (cold
  * start) to 65535 (warm start).
  *
@@ -359,6 +379,8 @@ int16_t sen5x_get_warm_start_parameter(uint16_t* warm_start);
 /**
  * sen5x_set_voc_algorithm_tuning_parameters() - Sets the tuning parameters of
  * the VOC algorithm.
+ *
+ * Supported sensors: SEN54, SEN55
  *
  * @note This command is available only in idle mode. In measure mode, this
  * command has no effect. In addition, it has no effect if at least one
@@ -401,6 +423,8 @@ int16_t sen5x_set_voc_algorithm_tuning_parameters(
  * sen5x_get_voc_algorithm_tuning_parameters() - Gets the currently set tuning
  * parameters of the VOC algorithm.
  *
+ * Supported sensors: SEN54, SEN55
+ *
  * @param index_offset VOC index representing typical (average) conditions.
  *
  * @param learning_time_offset_hours Time constant to estimate the VOC algorithm
@@ -431,6 +455,8 @@ int16_t sen5x_get_voc_algorithm_tuning_parameters(
 /**
  * sen5x_set_nox_algorithm_tuning_parameters() - Sets the tuning parameters of
  * the NOx algorithm.
+ *
+ * Supported sensors: SEN55
  *
  * @note This command is available only in idle mode. In measure mode, this
  * command has no effect. In addition, it has no effect if at least one
@@ -473,6 +499,8 @@ int16_t sen5x_set_nox_algorithm_tuning_parameters(
  * sen5x_get_nox_algorithm_tuning_parameters() - Gets the currently set tuning
  * parameters of the NOx algorithm.
  *
+ * Supported sensors: SEN55
+ *
  * @param index_offset NOx index representing typical (average) conditions.
  *
  * @param learning_time_offset_hours Time constant to estimate the NOx algorithm
@@ -504,6 +532,8 @@ int16_t sen5x_get_nox_algorithm_tuning_parameters(
 /**
  * sen5x_set_rht_acceleration_mode() - Sets the RH/T acceleration mode.
  *
+ * Supported sensors: SEN54, SEN55
+ *
  * @note This parameter can be changed in any state of the device (and the
  * getter immediately returns the new value), but it is applied only the next
  * time starting a measurement, i.e. when sending a \"Start Measurement\"
@@ -519,6 +549,8 @@ int16_t sen5x_set_rht_acceleration_mode(uint16_t mode);
 /**
  * sen5x_get_rht_acceleration_mode() - Gets the RH/T acceleration mode.
  *
+ * Supported sensors: SEN54, SEN55
+ *
  * @param mode The current RH/T acceleration mode.
  *
  * @return 0 on success, an error code otherwise
@@ -528,6 +560,8 @@ int16_t sen5x_get_rht_acceleration_mode(uint16_t* mode);
 /**
  * sen5x_set_voc_algorithm_state() - Sets the VOC algorithm state previously
  * received with the \"Get VOC Algorithm State\" command.
+ *
+ * Supported sensors: SEN54, SEN55
  *
  * @note This command is only available in idle mode and the state will be
  * applied only once when starting the next measurement. Any further
@@ -542,14 +576,16 @@ int16_t sen5x_set_voc_algorithm_state(const uint8_t* state, uint8_t state_size);
 
 /**
  * sen5x_get_voc_algorithm_state() - Gets the current VOC algorithm state. This
-data can be used to restore the state with the \"Set VOC Algorithm State\"
-command after a short power cycle or device reset.
-
-This command can be used either in measure mode or in idle mode
-(which will then return the state at the time when the measurement
-was stopped). In measure mode, the state can be read each measure
-interval to always have the latest state available, even in case of
-a sudden power loss.
+ * data can be used to restore the state with the \"Set VOC Algorithm State\"
+ * command after a short power cycle or device reset.
+ *
+ * This command can be used either in measure mode or in idle mode
+ * (which will then return the state at the time when the measurement
+ * was stopped). In measure mode, the state can be read each measure
+ * interval to always have the latest state available, even in case of
+ * a sudden power loss.
+ *
+ * Supported sensors: SEN54, SEN55
  *
  * @param state Current VOC algorithm state.
  *
@@ -641,11 +677,9 @@ int16_t sen5x_get_version(uint8_t* firmware_major, uint8_t* firmware_minor,
  *
  * @note The status flags of type \"Error\" are sticky, i.e. they are not
  * cleared automatically even if the error condition no longer exists. So they
- can
- * only be cleared manually with the command 0xD210 \"Read And Clear Device
+ * can only be cleared manually with the command 0xD210 \"Read And Clear Device
  * Status\" or with a device reset. All other flags are not sticky, i.e. they
- are
- * cleared automatically if the trigger condition disappears.
+ * are cleared automatically if the trigger condition disappears.
  *
  * @param device_status Device status (32 flags as an integer value). For
  * details, please refer to the device status flags documentation.

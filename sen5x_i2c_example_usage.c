@@ -34,7 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>  // printf
+#include <stdio.h>   // printf
+#include <string.h>  // strcmp
 
 #include "sen5x_i2c.h"
 #include "sensirion_common.h"
@@ -92,7 +93,8 @@ int main(void) {
                firmware_minor, hardware_major, hardware_minor);
     }
 
-    // set a temperature offset
+    // set a temperature offset - supported by SEN54 and SEN55 sensors
+    //
     // By default, the temperature and humidity outputs from the sensor
     // are compensated for the modules self-heating. If the module is
     // designed into a device, the temperature compensation might need
@@ -105,11 +107,11 @@ int main(void) {
     // Please refer to those application notes for further information
     // on the advanced compensation settings used in
     // `sen5x_set_temperature_offset_parameters`,
-    // `sen5x_set_warm_start_parameter` and `sen5x_set_rht_acceleration_mode`.
+    // `sen5x_set_warm_start_parameter` and
+    // `sen5x_set_rht_acceleration_mode`.
     //
     // Adjust temp_offset in degrees celsius to account for additional
     // temperature offsets exceeding the SEN module's self heating.
-
     float temp_offset = 0.0f;
     int16_t default_slope = 0;
     uint16_t default_time_constant = 0;
@@ -120,7 +122,8 @@ int main(void) {
             "Error executing sen5x_set_temperature_offset_parameters(): %i\n",
             error);
     } else {
-        printf("Temperature Offset set to %.2f °C\n", temp_offset);
+        printf("Temperature Offset set to %.2f °C (SEN54/SEN55 only)\n",
+               temp_offset);
     }
 
     // Start Measurement
@@ -158,10 +161,23 @@ int main(void) {
                    mass_concentration_pm4p0 / 10.0f);
             printf("Mass concentration pm10p0: %.1f µg/m³\n",
                    mass_concentration_pm10p0 / 10.0f);
-            printf("Ambient humidity: %.1f %%RH\n", ambient_humidity / 100.0f);
-            printf("Ambient temperature: %.1f °C\n",
-                   ambient_temperature / 200.0f);
-            printf("Voc index: %.1f\n", voc_index / 10.0f);
+            if (ambient_humidity == 0x7fff) {
+                printf("Ambient humidity: n/a\n");
+            } else {
+                printf("Ambient humidity: %.1f %%RH\n",
+                       ambient_humidity / 100.0f);
+            }
+            if (ambient_temperature == 0x7fff) {
+                printf("Ambient temperature: n/a\n");
+            } else {
+                printf("Ambient temperature: %.1f °C\n",
+                       ambient_temperature / 200.0f);
+            }
+            if (voc_index == 0x7fff) {
+                printf("Voc index: n/a\n");
+            } else {
+                printf("Voc index: %.1f\n", voc_index / 10.0f);
+            }
             if (nox_index == 0x7fff) {
                 printf("Nox index: n/a\n");
             } else {
