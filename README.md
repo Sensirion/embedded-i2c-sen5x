@@ -7,6 +7,7 @@ SEN54/SEN55 sensor module on different hardware platforms by only adapting the I
 
 ## Supported sensors
 
+- SEN50 (only particulate matter signals available)
 - SEN54 (no NOx signal available)
 - SEN55 (full feature set)
 
